@@ -16,6 +16,10 @@
 
 ## 🌐 Live Interactive Demo (Bilingual EN / PT)
 
+<p align="center">
+  <img src="public/demo_preview.gif" alt="Live Interactive Preview" width="100%" style="border-radius: 10px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);" />
+</p>
+
 Experience the live application with 1-click English 🇺🇸 and Portuguese 🇧🇷 switcher:  
 👉 **[https://kiptecnologia.github.io/hackmyresume-pro/](https://kiptecnologia.github.io/hackmyresume-pro/)**
 
