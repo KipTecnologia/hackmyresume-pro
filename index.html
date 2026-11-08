@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HackMyResume Pro — ATS Resume Builder & Career Suite</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    if (typeof tailwind !== "undefined") { tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Plus Jakarta Sans", "Inter", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"],
+            serif: ["Newsreader", "serif"],
+          }
+        }
+      }
+    };
+  }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap");
+    body { font-family: "Plus Jakarta Sans", sans-serif; transition: background-color 0.2s ease, color 0.2s ease; }
+
+    /* Realistic A4 Paper Sheet */
+    .a4-sheet {
+      width: 100%;
+      max-width: 794px;
+      min-height: 1123px;
+      background: #ffffff;
+      color: #0f172a;
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05);
+      margin: 0 auto;
+      padding: 48px;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .dark .a4-sheet {
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    }
+
+    /* Print styles */
+    @media print {
+      body * { visibility: hidden; }
+      #printableArea, #printableArea * { visibility: visible; }
+      #printableArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 15mm 20mm !important;
+        box-shadow: none !important;
+        border: none !important;
+      }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col">
+  <!-- Top Navigation Bar -->
+  <header class="border-b border-slate-200/80 bg-white/90 dark:border-slate-800/80 dark:bg-slate-950/90 backdrop-blur-md sticky top-0 z-40 px-6 py-3.5 no-print transition-colors">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+      <!-- Brand & Tagline -->
+      <div class="flex items-center gap-3.5">
+        <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-black shadow-md shadow-emerald-600/20">
+          <i class="fa-solid fa-file-invoice text-lg"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+      <button onclick="openJobMatcher()" class="px-3 py-1.5 rounded-xl bg-violet-50 text-violet-700 dark:bg-violet-500/10 dark:text-violet-400 hover:bg-violet-600 hover:text-white border border-violet-200 dark:border-violet-500/20 text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+        <i class="fa-solid fa-crosshairs text-violet-500"></i>
+        <span id="lbl-job-matcher">Job Matcher</span>
+        <span class="text-[9px] bg-violet-600 text-white dark:bg-violet-500 dark:text-slate-900 px-1.5 py-0.2 rounded font-extrabold uppercase">IA</span>
+      </button>
+      <button onclick="openPricingModal()" class="px-3 py-1.5 rounded-xl bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 hover:bg-amber-500 hover:text-white border border-amber-200 dark:border-amber-500/20 text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+        <i class="fa-solid fa-crown text-amber-500"></i>
+        <span id="lbl-pricing">Pro Plans</span>
+      </button>
+            <span class="text-base font-extrabold text-slate-900 dark:text-white tracking-tight">HackMyResume <span class="text-emerald-600 dark:text-emerald-400">Pro</span></span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 flex items-center gap-1">
+              <i class="fa-solid fa-check text-[9px]"></i> ATS 98%
+            </span>
+          </div>
+          <p id="lbl-brand-sub" class="text-xs text-slate-500 dark:text-slate-400">AI-Powered ATS Resume Builder & Career Suite</p>
+        </div>
+      </div>
+
+      <!-- Action Toolbar -->
+      <div class="flex items-center gap-2 flex-wrap justify-end">
+        <!-- Light / Dark Mode Toggle -->
+        <button onclick="toggleLanguage()" id="lang-toggle-btn" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-300 transition border border-slate-200 dark:border-slate-800 text-xs font-bold flex items-center gap-1 shadow-sm" title="Toggle English / Português">
+          <span id="lang-flag">🇧🇷</span> <span id="lang-label">PT</span>
+        </button>
+        <button onclick="toggleDarkMode()" id="mode-toggle" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-300 transition border border-slate-200 dark:border-slate-800 flex items-center justify-center w-9 h-9" title="Alternar Modo Claro / Escuro">
+          <i id="mode-icon" class="fa-solid fa-moon text-sm"></i>
+        </button>
+
+        <button onclick="loadSampleData()" class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-300 text-xs font-semibold transition border border-slate-200 dark:border-slate-800 flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-arrows-rotate text-emerald-600 dark:text-emerald-400"></i> <span id="lbl-sample">Sample</span>
+        </button>
+        <button onclick="exportJSON()" class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-300 text-xs font-semibold transition border border-slate-200 dark:border-slate-800 flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-code text-indigo-600 dark:text-indigo-400"></i> JSON
+        </button>
+        <button onclick="exportMarkdown()" class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-300 text-xs font-semibold transition border border-slate-200 dark:border-slate-800 flex items-center gap-1.5 shadow-sm">
+          <i class="fa-brands fa-markdown text-sky-600 dark:text-sky-400"></i> Markdown
+        </button>
+        <button onclick="printResume()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition flex items-center gap-2 shadow-md shadow-emerald-600/20">
+          <i class="fa-solid fa-file-pdf"></i> <span id="lbl-download">Download PDF (A4)</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Workspace Container: Split Screen -->
+  <div class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- LEFT COLUMN: Editor & Settings -->
+    <div class="lg:col-span-5 flex flex-col gap-4 no-print">
+      <!-- Editor Tabs -->
+      <div class="bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-2xl p-1.5 flex gap-1 text-xs shadow-sm backdrop-blur">
+        <button onclick="switchTab('profile')" id="tab-profile" class="tab-btn flex-1 py-2 rounded-xl font-bold bg-emerald-600 text-white transition flex items-center justify-center gap-1.5">
+          <i class="fa-regular fa-user"></i> <span id="lbl-tab-profile">Profile</span>
+        </button>
+        <button onclick="switchTab('experience')" id="tab-experience" class="tab-btn flex-1 py-2 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-briefcase"></i> <span id="lbl-tab-experience">Experience</span>
+        </button>
+        <button onclick="switchTab('education')" id="tab-education" class="tab-btn flex-1 py-2 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-graduation-cap"></i> <span id="lbl-tab-education">Education</span>
+        </button>
+        <button onclick="switchTab('skills')" id="tab-skills" class="tab-btn flex-1 py-2 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-layer-group"></i> <span id="lbl-tab-skills">Skills</span>
+        </button>
+      </div>
+
+      <!-- Tab Content Area -->
+      <div class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 flex-1 shadow-sm space-y-4 max-h-[720px] overflow-y-auto">
+        <!-- Profile Tab -->
+        <div id="content-profile" class="tab-content space-y-3.5">
+          <div class="flex items-center justify-between pb-1 border-b border-slate-100 dark:border-slate-800">
+            <h3 class="text-xs uppercase font-bold tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+              <i class="fa-regular fa-id-card"></i> <span id="lbl-personal-data">Personal Details & Contact</span>
+            </h3>
+            <span id="lbl-ats-essential" class="text-[11px] text-slate-400">Essential for ATS</span>
+          </div>
+          <div>
+            <label id="lbl-name" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
+            <input type="text" id="input-name" oninput="updateResume()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
+          </div>
+          <div>
+            <label id="lbl-title" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Professional Title (e.g. Senior Full Stack Engineer)</label>
+            <input type="text" id="input-title" oninput="updateResume()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label id="lbl-email" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Email</label>
+              <input type="email" id="input-email" oninput="updateResume()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
+            </div>
+            <div>
+              <label id="lbl-phone" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Phone</label>
+              <input type="text" id="input-phone" oninput="updateResume()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label id="lbl-location" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Location (City, State / Country)</label>
+              <input type="text" id="input-location" oninput="updateResume()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
+            </div>
+            <div>
+              <label id="lbl-url" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">LinkedIn or Portfolio URL</label>
+              <input type="text" id="input-url" oninput="updateResume()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
+            </div>
+          </div>
+          <div>
+            <label id="lbl-summary" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Executive Summary</label>
+            <textarea id="input-summary" rows="4" oninput="updateResume()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 leading-relaxed transition"></textarea>
+          </div>
+        </div>
+
+        <!-- Experience Tab -->
+        <div id="content-experience" class="tab-content hidden space-y-4">
+          <div class="flex items-center justify-between pb-1 border-b border-slate-100 dark:border-slate-800">
+            <h3 class="text-xs uppercase font-bold tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+              <i class="fa-solid fa-briefcase"></i> <span id="lbl-history">Work Experience</span>
+            </h3>
+            <button onclick="addExperience()" class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white text-xs font-bold transition flex items-center gap-1 border border-emerald-200 dark:border-emerald-500/20">
+              <i class="fa-solid fa-plus text-[10px]"></i> Adicionar
+            </button>
+          </div>
+          <div id="experience-list" class="space-y-4"></div>
+        </div>
+
+        <!-- Education Tab -->
+        <div id="content-education" class="tab-content hidden space-y-4">
+          <div class="flex items-center justify-between pb-1 border-b border-slate-100 dark:border-slate-800">
+            <h3 class="text-xs uppercase font-bold tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+              <i class="fa-solid fa-graduation-cap"></i> <span id="lbl-education-title">Education</span>
+            </h3>
+            <button onclick="addEducation()" class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white text-xs font-bold transition flex items-center gap-1 border border-emerald-200 dark:border-emerald-500/20">
+              <i class="fa-solid fa-plus text-[10px]"></i> Adicionar
+            </button>
+          </div>
+          <div id="education-list" class="space-y-4"></div>
+        </div>
+
+        <!-- Skills Tab -->
+        <div id="content-skills" class="tab-content hidden space-y-4">
+          <div class="pb-1 border-b border-slate-100 dark:border-slate-800">
+            <h3 class="text-xs uppercase font-bold tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+              <i class="fa-solid fa-layer-group"></i> <span id="lbl-skills-title">Core Competencies</span>
+            </h3>
+          </div>
+          <div>
+            <label id="lbl-tech" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Languages & Frameworks (comma separated)</label>
+            <input type="text" id="input-skills-tech" oninput="updateResume()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition">
+          </div>
+          <div>
+            <label id="lbl-tools" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Tools & Methodologies (comma separated)</label>
+            <input type="text" id="input-skills-tools" oninput="updateResume()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition">
+          </div>
+        </div>
+      </div>
+
+      <!-- Refined Minimalist ATS Badge (Clean & Elegant) -->
+      <div class="bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-500/30 rounded-2xl p-3.5 shadow-sm flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 flex items-center justify-center font-bold text-sm">
+            <i class="fa-solid fa-shield-check"></i>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+              <span id="lbl-ats-score">ATS Score: 98% Compatibility</span>
+              <span class="text-[10px] font-extrabold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300">Rank A+</span>
+            </div>
+            <p id="lbl-ats-sub" class="text-[11px] text-slate-500 dark:text-slate-400">Semantic linear layout approved for recruiter automated screening</p>
+          </div>
+        </div>
+        <span class="text-xs text-emerald-600 dark:text-emerald-400 font-bold hidden sm:inline-flex items-center gap-1">
+          <i class="fa-solid fa-circle-check"></i> <span id="lbl-ats-safe">Verified</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Theme & Color Controls + Live A4 Canvas -->
+    <div class="lg:col-span-7 flex flex-col gap-4">
+      <!-- Styling Toolbar -->
+      <div class="bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 flex flex-wrap items-center justify-between gap-3 shadow-sm backdrop-blur no-print">
+        <!-- Themes -->
+        <div class="flex items-center gap-2">
+          <span id="lbl-theme" class="text-xs text-slate-500 dark:text-slate-400 font-medium">Theme:</span>
+          <div class="flex items-center gap-1">
+            <button onclick="setTheme('modern')" id="btn-theme-modern" class="theme-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 text-white transition">Modern Clean</button>
+            <button onclick="setTheme('minimal')" id="btn-theme-minimal" class="theme-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition">Minimal Tech</button>
+            <button onclick="setTheme('executive')" id="btn-theme-executive" class="theme-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition">Executive</button>
+            <button onclick="setTheme('ats')" id="btn-theme-ats" class="theme-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition">Compact ATS</button>
+          </div>
+        </div>
+
+        <!-- Color Accents -->
+        <div class="flex items-center gap-2">
+          <span id="lbl-accent" class="text-xs text-slate-500 dark:text-slate-400 font-medium">Accent Color:</span>
+          <div class="flex items-center gap-1.5">
+            <button onclick="setAccent('emerald')" class="w-6 h-6 rounded-full bg-emerald-600 ring-2 ring-emerald-600/30 hover:scale-110 transition" title="Esmeralda"></button>
+            <button onclick="setAccent('blue')" class="w-6 h-6 rounded-full bg-blue-600 hover:scale-110 transition" title="Azul Royal"></button>
+            <button onclick="setAccent('violet')" class="w-6 h-6 rounded-full bg-violet-600 hover:scale-110 transition" title="Violeta"></button>
+            <button onclick="setAccent('amber')" class="w-6 h-6 rounded-full bg-amber-600 hover:scale-110 transition" title="Âmbar"></button>
+            <button onclick="setAccent('slate')" class="w-6 h-6 rounded-full bg-slate-800 hover:scale-110 transition" title="Monocromático"></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-time Paper Canvas Area -->
+      <div class="flex-1 bg-slate-100 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800/80 rounded-2xl p-4 md:p-8 overflow-x-auto flex justify-center items-start shadow-inner">
+        <div id="printableArea" class="a4-sheet">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let isDark = false;
+
+    function toggleDarkMode() {
+      isDark = !isDark;
+      const html = document.documentElement;
+      const icon = document.getElementById("mode-icon");
+      if (isDark) {
+        html.classList.add("dark");
+        html.classList.remove("light");
+        icon.className = "fa-solid fa-sun text-amber-400 text-sm";
+      } else {
+        html.classList.remove("dark");
+        html.classList.add("light");
+        icon.className = "fa-solid fa-moon text-slate-600 text-sm";
+      }
+    }
+
+    let resume = {
+      basics: {
+        name: "Carlos Henrique Silva",
+        label: "Senior Full Stack Engineer & Tech Lead",
+        email: "carlos.silva@techmail.com",
+        phone: "+55 (11) 98765-4321",
+        url: "https://linkedin.com/in/carlos-silva-dev",
+        location: "São Paulo, SP - Brasil",
+        summary: "Engenheiro de Software com mais de 8 anos de experiência em arquiteturas escaláveis, ecossistema Next.js, Node.js e computação em nuvem. Histórico comprovado de liderança técnica, otimização de performance e redução de custos de infraestrutura em ambientes de alto tráfego."
+      },
+      work: [
+        {
+          company: "Fintech Inovação Digital",
+          position: "Lead Full Stack Engineer",
+          dates: "2022 - Atual",
+          summary: "Liderou a migração da plataforma principal de pagamentos para Next.js 15 e microserviços em Node.js.",
+          highlights: [
+            "Aumento de 45% na taxa de conversão do checkout ao reduzir o tempo de carregamento em 1.8 segundos.",
+            "Implementou arquitetura orientada a eventos processando mais de 500k transações diárias com 99.99% de uptime."
+          ]
+        },
+        {
+          company: "CloudScale Soluções Web",
+          position: "Senior Frontend Engineer",
+          dates: "2019 - 2022",
+          summary: "Desenvolveu painéis de telemetria analítica corporativa e design system interno.",
+          highlights: [
+            "Criou biblioteca de componentes com TypeScript estrito adotada por 5 squads simultâneos.",
+            "Reduziu o bundle size inicial em 35% com code-splitting e otimização de assets."
+          ]
+        }
+      ],
+      education: [
+        {
+          institution: "Universidade de São Paulo (USP)",
+          area: "Engenharia de Computação",
+          degree: "Bacharelado",
+          dates: "2015 - 2019"
+        }
+      ],
+      skills: {
+        tech: ["TypeScript", "Next.js 15", "React 19", "Node.js", "Tailwind CSS", "GraphQL", "PostgreSQL", "Docker", "AWS"],
+        tools: ["Git", "Jest", "CI/CD (GitHub Actions)", "Vercel", "Prisma ORM", "Stripe API"]
+      }
+    };
+
+    let activeTheme = "modern";
+    let activeAccent = "emerald";
+
+    const accentMap = {
+      emerald: { hex: "#059669", text: "text-emerald-700", border: "border-emerald-600" },
+      blue: { hex: "#2563eb", text: "text-blue-700", border: "border-blue-600" },
+      violet: { hex: "#7c3aed", text: "text-violet-700", border: "border-violet-600" },
+      amber: { hex: "#d97706", text: "text-amber-700", border: "border-amber-600" },
+      slate: { hex: "#334155", text: "text-slate-800", border: "border-slate-800" }
+    };
+
+    function setAccent(color) {
+      activeAccent = color;
+      renderPaper();
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll(".tab-btn").forEach(b => {
+        b.className = "tab-btn flex-1 py-2 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center justify-center gap-1.5";
+      });
+      document.querySelectorAll(".tab-content").forEach(c => c.classList.add("hidden"));
+
+      const activeBtn = document.getElementById("tab-" + tab);
+      const activeContent = document.getElementById("content-" + tab);
+      if (activeBtn) activeBtn.className = "tab-btn flex-1 py-2 rounded-xl font-bold bg-emerald-600 text-white transition flex items-center justify-center gap-1.5";
+      if (activeContent) activeContent.classList.remove("hidden");
+    }
+
+    function syncFormWithData() {
+      document.getElementById("input-name").value = resume.basics.name;
+      document.getElementById("input-title").value = resume.basics.label;
+      document.getElementById("input-email").value = resume.basics.email;
+      document.getElementById("input-phone").value = resume.basics.phone;
+      document.getElementById("input-location").value = resume.basics.location;
+      document.getElementById("input-url").value = resume.basics.url;
+      document.getElementById("input-summary").value = resume.basics.summary;
+
+      document.getElementById("input-skills-tech").value = resume.skills.tech.join(", ");
+      document.getElementById("input-skills-tools").value = resume.skills.tools.join(", ");
+
+      renderExperienceInputs();
+      renderEducationInputs();
+      renderPaper();
+    }
+
+    function renderExperienceInputs() {
+      const list = document.getElementById("experience-list");
+      list.innerHTML = "";
+      resume.work.forEach((w, idx) => {
+        const item = document.createElement("div");
+        item.className = "bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 space-y-2 relative";
+        item.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-800 dark:text-slate-200">#${idx + 1} ${w.company || "Empresa"}</span>
+            <button onclick="removeExperience(${idx})" class="text-rose-500 hover:text-rose-600 text-xs"><i class="fa-solid fa-trash"></i></button>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <input type="text" placeholder="Empresa" value="${w.company}" oninput="resume.work[${idx}].company=this.value; renderPaper();" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-white">
+            <input type="text" placeholder="Cargo" value="${w.position}" oninput="resume.work[${idx}].position=this.value; renderPaper();" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-white">
+          </div>
+          <input type="text" placeholder="Período" value="${w.dates}" oninput="resume.work[${idx}].dates=this.value; renderPaper();" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-white">
+          <textarea placeholder="Resumo do impacto" rows="2" oninput="resume.work[${idx}].summary=this.value; renderPaper();" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-white">${w.summary}</textarea>
+          <div class="flex justify-end pt-1">
+            <button onclick="openAiOptimizer(${idx})" class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-200 dark:border-emerald-500/20 flex items-center gap-1.5 transition">
+              <i class="fa-solid fa-wand-magic-sparkles text-[10px]"></i> Otimizar com IA
+            </button>
+          </div>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function renderEducationInputs() {
+      const list = document.getElementById("education-list");
+      list.innerHTML = "";
+      resume.education.forEach((e, idx) => {
+        const item = document.createElement("div");
+        item.className = "bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 space-y-2";
+        item.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-800 dark:text-slate-200">#${idx + 1} ${e.institution || "Instituição"}</span>
+            <button onclick="removeEducation(${idx})" class="text-rose-500 hover:text-rose-600 text-xs"><i class="fa-solid fa-trash"></i></button>
+          </div>
+          <input type="text" placeholder="Instituição" value="${e.institution}" oninput="resume.education[${idx}].institution=this.value; renderPaper();" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-white">
+          <div class="grid grid-cols-2 gap-2">
+            <input type="text" placeholder="Curso" value="${e.area}" oninput="resume.education[${idx}].area=this.value; renderPaper();" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-white">
+            <input type="text" placeholder="Período" value="${e.dates}" oninput="resume.education[${idx}].dates=this.value; renderPaper();" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-white">
+          </div>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function addExperience() {
+      resume.work.push({
+        company: "Nova Empresa",
+        position: "Cargo",
+        dates: "2023 - Presente",
+        summary: "Descrição do impacto gerado, tecnologias e métricas.",
+        highlights: []
+      });
+      renderExperienceInputs();
+      renderPaper();
+    }
+
+    function removeExperience(idx) {
+      resume.work.splice(idx, 1);
+      renderExperienceInputs();
+      renderPaper();
+    }
+
+    function addEducation() {
+      resume.education.push({
+        institution: "Nova Universidade",
+        area: "Área de Estudo",
+        degree: "Bacharelado",
+        dates: "Ano - Ano"
+      });
+      renderEducationInputs();
+      renderPaper();
+    }
+
+    function removeEducation(idx) {
+      resume.education.splice(idx, 1);
+      renderEducationInputs();
+      renderPaper();
+    }
+
+    function updateResume() {
+      resume.basics.name = document.getElementById("input-name").value;
+      resume.basics.label = document.getElementById("input-title").value;
+      resume.basics.email = document.getElementById("input-email").value;
+      resume.basics.phone = document.getElementById("input-phone").value;
+      resume.basics.location = document.getElementById("input-location").value;
+      resume.basics.url = document.getElementById("input-url").value;
+      resume.basics.summary = document.getElementById("input-summary").value;
+
+      resume.skills.tech = document.getElementById("input-skills-tech").value.split(",").map(s => s.trim()).filter(Boolean);
+      resume.skills.tools = document.getElementById("input-skills-tools").value.split(",").map(s => s.trim()).filter(Boolean);
+
+      renderPaper();
+    }
+
+    function setTheme(t) {
+      activeTheme = t;
+      document.querySelectorAll(".theme-btn").forEach(b => {
+        b.className = "theme-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition";
+      });
+      const active = document.getElementById("btn-theme-" + t);
+      if (active) active.className = "theme-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 text-white transition";
+      renderPaper();
+    }
+
+    
+    
+    let currentLang = 'en'; // DEFAULT IS ENGLISH
+    const uiDictionary = {
+      en: {
+        flag: "🇧🇷",
+        flagLabel: "PT",
+        brandSub: "AI-Powered ATS Resume Builder & Career Suite",
+        jobMatcher: "Job Matcher",
+        pricing: "Pro Plans",
+        sample: "Sample",
+        download: "Download PDF (A4)",
+        tabProfile: "Profile",
+        tabExperience: "Experience",
+        tabEducation: "Education",
+        tabSkills: "Skills",
+        personalData: "Personal Details & Contact",
+        atsEssential: "Essential for ATS",
+        labelName: "Full Name",
+        labelTitle: "Professional Title (e.g. Senior Full Stack Engineer)",
+        labelEmail: "Email",
+        labelPhone: "Phone",
+        labelLocation: "Location (City, State / Country)",
+        labelUrl: "LinkedIn or Portfolio URL",
+        labelSummary: "Executive Summary",
+        history: "Work Experience",
+        educationTitle: "Education",
+        skillsTitle: "Core Competencies",
+        tech: "Languages & Frameworks (comma separated)",
+        tools: "Tools & Methodologies (comma separated)",
+        atsScore: "ATS Score: 98% Compatibility",
+        atsSub: "Semantic linear layout approved for recruiter automated screening",
+        atsSafe: "Verified",
+        theme: "Theme:",
+        accent: "Accent Color:",
+        aiModalTitle: "AI Impact Optimizer",
+        aiModalSub: "Rewrite bullets with strong action verbs & ATS metrics",
+        aiModalOrigTitle: "Original Bullet",
+        aiModalSugTitle: "ATS Optimized Suggestion (High Conversion)",
+        aiModalCancel: "Cancel",
+        aiModalApply: "Apply to Resume",
+        matcherModalTitle: "ATS Job Matcher",
+        matcherModalSub: "Check if your resume passes applicant tracking screening",
+        matcherPasteTitle: "Paste Job Description here:",
+        matcherPlaceholder: "e.g. Seeking Senior Full Stack Engineer with strong Next.js 15, TypeScript, PostgreSQL, Docker...",
+        matcherAnalyzeBtn: "Analyze Match with AI",
+        matcherHighCompat: "High ATS Compatibility",
+        matcherHighCompatSub: "Strong probability of passing automated recruiter screening",
+        matcherBadge: "Compatible",
+        matcherDetected: "Keywords Found in your Resume:",
+        matcherMissing: "Missing Keywords (Click to Add):",
+        pricingModalTitle: "Commercial Licensing & Plans",
+        pricingModalSub: "Stripe Checkout architecture ready for your Micro-SaaS",
+        planRec: "Subscription",
+        planMonthTitle: "Pro Monthly",
+        planMonthPrice: "$19",
+        planMonthFreq: "/month",
+        featUnlimited: "Unlimited Resumes",
+        featTemplates: "All 4 ATS Templates",
+        featCredits: "100 AI Optimization Credits",
+        featWatermark: "Export without Watermark",
+        btnTestCheckout: "Test Stripe Checkout",
+        badgePopular: "Most Popular",
+        planLifeType: "One-time Payment",
+        planLifeTitle: "Lifetime Pro",
+        planLifePrice: "$79",
+        planLifeFreq: "one-time access",
+        featLifeTotal: "Full Lifetime Access",
+        featLifeCredits: "500 AI Optimization Credits",
+        featLifeFuture: "All Future Templates Included",
+        featLifeSupport: "Priority Discord/Email Support",
+        btnLifeBuy: "Get Lifetime License",
+
+        resume: {
+          basics: {
+            name: "Alexander Morgan",
+            label: "Senior Full Stack Engineer & Tech Lead",
+            email: "alex.morgan@techmail.io",
+            phone: "+1 (415) 892-4120",
+            url: "https://linkedin.com/in/alex-morgan-dev",
+            location: "San Francisco, CA - USA",
+            summary: "Senior Software Engineer with 8+ years architecting scalable cloud platforms, Next.js 15 microservices, and AI integrations. Proven track record leading distributed engineering teams, optimizing web performance, and saving $250k+ in infrastructure overhead."
+          },
+          work: [
+            {
+              company: "NovaScale Cloud Systems",
+              position: "Lead Full Stack Engineer",
+              dates: "2022 - Present",
+              summary: "Spearheaded the migration of core payment workflows to Next.js 15 and event-driven microservices, delivering 42% throughput gains and 99.99% uptime.",
+              highlights: []
+            },
+            {
+              company: "Apex Digital Solutions",
+              position: "Senior Frontend Engineer",
+              dates: "2019 - 2022",
+              summary: "Built high-frequency real-time analytics telemetry dashboards and unified TypeScript design system adopted across 5 product squads.",
+              highlights: []
+            }
+          ],
+          education: [
+            {
+              institution: "UC Berkeley",
+              area: "Computer Science",
+              degree: "B.S. in Computer Science",
+              dates: "2015 - 2019"
+            }
+          ],
+          skills: {
+            tech: ["TypeScript", "Next.js 15", "React 19", "Node.js", "Tailwind CSS", "GraphQL", "PostgreSQL", "Docker", "AWS"],
+            tools: ["Git", "Jest", "CI/CD (GitHub Actions)", "Vercel", "Prisma ORM", "Stripe API"]
+          }
+        }
+      },
+      pt: {
+        flag: "🇺🇸",
+        flagLabel: "EN",
+        brandSub: "Criador de Currículos Otimizados para IA & Recrutamento",
+        jobMatcher: "Vaga Matcher",
+        pricing: "Planos Pro",
+        sample: "Exemplo",
+        download: "Baixar em PDF (A4)",
+        tabProfile: "Perfil",
+        tabExperience: "Cargos",
+        tabEducation: "Educação",
+        tabSkills: "Skills",
+        personalData: "Dados Pessoais & Contato",
+        atsEssential: "Essencial para ATS",
+        labelName: "Nome Completo",
+        labelTitle: "Título Profissional (Ex: Senior Full Stack Engineer)",
+        labelEmail: "E-mail",
+        labelPhone: "Telefone",
+        labelLocation: "Localização (Cidade, UF)",
+        labelUrl: "LinkedIn ou Portfólio",
+        labelSummary: "Resumo Executivo (Perfil Profissional)",
+        history: "Histórico Profissional",
+        educationTitle: "Formação Acadêmica",
+        skillsTitle: "Competências Técnicas",
+        tech: "Linguagens & Frameworks (separados por vírgula)",
+        tools: "Ferramentas & Metodologias (separados por vírgula)",
+        atsScore: "Leitura ATS: 98% de Compatibilidade",
+        atsSub: "Estrutura linear semântica aprovada para triagem automática de RH",
+        atsSafe: "Seguro",
+        theme: "Tema:",
+        accent: "Cor de Destaque:",
+        aiModalTitle: "Otimizador de Impacto com IA",
+        aiModalSub: "Reescreva conquistas com verbos de ação e métricas ATS",
+        aiModalOrigTitle: "Ponto Original",
+        aiModalSugTitle: "Sugestão Otimizada para ATS (Alta Conversão)",
+        aiModalCancel: "Cancelar",
+        aiModalApply: "Aplicar ao Currículo",
+        matcherModalTitle: "Comparador de Vagas ATS (Job Matcher)",
+        matcherModalSub: "Descubra se o seu currículo passa no filtro da vaga desejada",
+        matcherPasteTitle: "Cole aqui a Descrição da Vaga de Emprego:",
+        matcherPlaceholder: "Ex: Buscamos Desenvolvedor Full Stack com sólida experiência em Next.js 15, TypeScript, PostgreSQL, Docker e AWS...",
+        matcherAnalyzeBtn: "Analisar Aderência com IA",
+        matcherHighCompat: "Alta Compatibilidade ATS",
+        matcherHighCompatSub: "Chances elevadas de aprovação na primeira triagem do RH",
+        matcherBadge: "Compatível",
+        matcherDetected: "Palavras-chave Detectadas no seu Currículo:",
+        matcherMissing: "Palavras-chave que Faltam (Clique para Adicionar):",
+        pricingModalTitle: "Planos Comerciais & Monetização",
+        pricingModalSub: "Arquitetura Stripe Checkout pronta para faturar no seu Micro-SaaS",
+        planRec: "Recorrente",
+        planMonthTitle: "Pro Mensal",
+        planMonthPrice: "R$ 19",
+        planMonthFreq: "/mês",
+        featUnlimited: "Currículos Ilimitados",
+        featTemplates: "Todos os 4 Templates",
+        featCredits: "100 Créditos de IA",
+        featWatermark: "Exportação sem marca d'água",
+        btnTestCheckout: "Testar Checkout Stripe",
+        badgePopular: "Mais Popular",
+        planLifeType: "Pagamento Único",
+        planLifeTitle: "Vitalício Pro",
+        planLifePrice: "R$ 79",
+        planLifeFreq: "acesso único",
+        featLifeTotal: "Acesso Vitalício Total",
+        featLifeCredits: "500 Créditos de IA",
+        featLifeFuture: "Todos os futuros templates",
+        featLifeSupport: "Suporte Prioritário",
+        btnLifeBuy: "Adquirir Licença Vitalícia",
+
+        resume: {
+          basics: {
+            name: "Carlos Henrique Silva",
+            label: "Senior Full Stack Engineer & Tech Lead",
+            email: "carlos.silva@techmail.com",
+            phone: "+55 (11) 98765-4321",
+            url: "https://linkedin.com/in/carlos-silva-dev",
+            location: "São Paulo, SP - Brasil",
+            summary: "Engenheiro de Software com mais de 8 anos de experiência em arquiteturas escaláveis, ecossistema Next.js, Node.js e computação em nuvem. Histórico comprovado de liderança técnica, otimização de performance e redução de custos de infraestrutura em ambientes de alto tráfego."
+          },
+          work: [
+            {
+              company: "Fintech Inovação Digital",
+              position: "Lead Full Stack Engineer",
+              dates: "2022 - Atual",
+              summary: "Liderou a modernização da infraestrutura crítica, gerando 42% de ganho de performance e redução de R$ 180k em custos operacionais anuais.",
+              highlights: []
+            },
+            {
+              company: "CloudScale Soluções Web",
+              position: "Senior Frontend Engineer",
+              dates: "2019 - 2022",
+              summary: "Desenvolveu painéis de telemetria analítica corporativa e design system interno adotado por 5 squads simultâneos.",
+              highlights: []
+            }
+          ],
+          education: [
+            {
+              institution: "Universidade de São Paulo (USP)",
+              area: "Engenharia de Computação",
+              degree: "Bacharelado",
+              dates: "2015 - 2019"
+            }
+          ],
+          skills: {
+            tech: ["TypeScript", "Next.js 15", "React 19", "Node.js", "Tailwind CSS", "GraphQL", "PostgreSQL", "Docker", "AWS"],
+            tools: ["Git", "Jest", "CI/CD (GitHub Actions)", "Vercel", "Prisma ORM", "Stripe API"]
+          }
+        }
+      }
+    };
+
+    function applyUiLanguage(lang) {
+      const d = uiDictionary[lang];
+      if (!d) return;
+
+      const setT = (id, text) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = text;
+      };
+
+      setT('lang-flag', d.flag);
+      setT('lang-label', d.flagLabel);
+      setT('lbl-brand-sub', d.brandSub);
+      setT('lbl-job-matcher', d.jobMatcher);
+      setT('lbl-pricing', d.pricing);
+      setT('lbl-sample', d.sample);
+      setT('lbl-download', d.download);
+
+      setT('lbl-tab-profile', d.tabProfile);
+      setT('lbl-tab-experience', d.tabExperience);
+      setT('lbl-tab-education', d.tabEducation);
+      setT('lbl-tab-skills', d.tabSkills);
+
+      setT('lbl-personal-data', d.personalData);
+      setT('lbl-ats-essential', d.atsEssential);
+      setT('lbl-name', d.labelName);
+      setT('lbl-title', d.labelTitle);
+      setT('lbl-email', d.labelEmail);
+      setT('lbl-phone', d.labelPhone);
+      setT('lbl-location', d.labelLocation);
+      setT('lbl-url', d.labelUrl);
+      setT('lbl-summary', d.labelSummary);
+
+      setT('lbl-history', d.history);
+      setT('lbl-education-title', d.educationTitle);
+      setT('lbl-skills-title', d.skillsTitle);
+      setT('lbl-tech', d.tech);
+      setT('lbl-tools', d.tools);
+
+      setT('lbl-ats-score', d.atsScore);
+      setT('lbl-ats-sub', d.atsSub);
+      setT('lbl-ats-safe', d.atsSafe);
+      setT('lbl-theme', d.theme);
+      setT('lbl-accent', d.accent);
+      setT('lbl-ai-modal-title', d.aiModalTitle);
+      setT('lbl-ai-modal-sub', d.aiModalSub);
+      setT('lbl-ai-modal-orig-title', d.aiModalOrigTitle);
+      setT('lbl-ai-modal-sug-title', d.aiModalSugTitle);
+      setT('lbl-ai-modal-cancel', d.aiModalCancel);
+      setT('lbl-ai-modal-apply', d.aiModalApply);
+
+      setT('lbl-matcher-modal-title', d.matcherModalTitle);
+      setT('lbl-matcher-modal-sub', d.matcherModalSub);
+      setT('lbl-matcher-paste-title', d.matcherPasteTitle);
+      const matcherInput = document.getElementById('job-description-input');
+      if (matcherInput && d.matcherPlaceholder) matcherInput.placeholder = d.matcherPlaceholder;
+      setT('lbl-matcher-analyze-btn', d.matcherAnalyzeBtn);
+      setT('lbl-matcher-high-compat', d.matcherHighCompat);
+      setT('lbl-matcher-high-compat-sub', d.matcherHighCompatSub);
+      setT('lbl-matcher-badge', d.matcherBadge);
+      setT('lbl-matcher-detected', d.matcherDetected);
+      setT('lbl-matcher-missing', d.matcherMissing);
+
+      setT('lbl-pricing-modal-title', d.pricingModalTitle);
+      setT('lbl-pricing-modal-sub', d.pricingModalSub);
+      setT('lbl-plan-rec', d.planRec);
+      setT('lbl-plan-month-title', d.planMonthTitle);
+      setT('lbl-plan-month-price', d.planMonthPrice);
+      setT('lbl-plan-month-freq', d.planMonthFreq);
+      setT('lbl-feat-unlimited', d.featUnlimited);
+      setT('lbl-feat-templates', d.featTemplates);
+      setT('lbl-feat-credits', d.featCredits);
+      setT('lbl-feat-watermark', d.featWatermark);
+      setT('lbl-btn-test-checkout', d.btnTestCheckout);
+      setT('lbl-badge-popular', d.badgePopular);
+      setT('lbl-plan-life-type', d.planLifeType);
+      setT('lbl-plan-life-title', d.planLifeTitle);
+      setT('lbl-plan-life-price', d.planLifePrice);
+      setT('lbl-plan-life-freq', d.planLifeFreq);
+      setT('lbl-feat-life-total', d.featLifeTotal);
+      setT('lbl-feat-life-credits', d.featLifeCredits);
+      setT('lbl-feat-life-future', d.featLifeFuture);
+      setT('lbl-feat-life-support', d.featLifeSupport);
+      setT('lbl-btn-life-buy', d.btnLifeBuy);
+
+
+      resume = JSON.parse(JSON.stringify(d.resume));
+      syncFormWithData();
+      renderPaper();
+    }
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'en' ? 'pt' : 'en';
+      applyUiLanguage(currentLang);
+    }
+
+    function renderPaper() {
+      const container = document.getElementById("printableArea");
+      const accent = accentMap[activeAccent] || accentMap.emerald;
+
+      let themeClass = "font-sans text-[13.5px]";
+      let headerAccent = `border-b-2 ${accent.border} pb-4 mb-6`;
+      let sectionTitleClass = `text-xs font-extrabold uppercase tracking-wider ${accent.text} border-b border-slate-200 pb-1 mb-2.5`;
+
+      if (activeTheme === "minimal") {
+        themeClass = "font-mono text-[13px]";
+        headerAccent = "border-b border-slate-900 pb-3 mb-6";
+        sectionTitleClass = "text-xs font-bold uppercase tracking-widest text-slate-900 border-b border-slate-300 pb-1 mb-2.5";
+      } else if (activeTheme === "executive") {
+        themeClass = "font-serif text-[14.5px]";
+        headerAccent = "border-b-2 border-slate-900 pb-4 mb-6 text-center";
+        sectionTitleClass = "text-xs font-bold uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-1 mb-2.5";
+      } else if (activeTheme === "ats") {
+        themeClass = "text-[12px] leading-tight";
+        headerAccent = "border-b border-slate-400 pb-2 mb-4 text-center";
+        sectionTitleClass = "text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-0.5 mb-2";
+      }
+
+      container.className = `a4-sheet ${themeClass}`;
+
+      let workHtml = resume.work.map(w => `
+        <div class="mb-4">
+          <div class="flex justify-between items-baseline">
+            <span class="font-extrabold text-slate-950 text-sm">${w.position}</span>
+            <span class="text-xs font-medium text-slate-500">${w.dates}</span>
+          </div>
+          <div class="text-xs font-bold text-slate-700 mb-1">${w.company}</div>
+          <p class="text-xs text-slate-600 leading-relaxed mb-1.5">${w.summary}</p>
+          ${w.highlights && w.highlights.length ? `
+            <ul class="list-disc list-inside text-xs text-slate-600 space-y-0.5 ml-1">
+              ${w.highlights.map(h => `<li>${h}</li>`).join("")}
+            </ul>
+          ` : ""}
+        </div>
+      `).join("");
+
+      let eduHtml = resume.education.map(e => `
+        <div class="mb-3">
+          <div class="flex justify-between items-baseline">
+            <span class="font-bold text-slate-950 text-sm">${e.area}</span>
+            <span class="text-xs font-medium text-slate-500">${e.dates}</span>
+          </div>
+          <div class="text-xs text-slate-700">${e.institution} ${e.degree ? `• ${e.degree}` : ""}</div>
+        </div>
+      `).join("");
+
+      container.innerHTML = `
+        <!-- Header -->
+        <div class="${headerAccent}">
+          <h1 class="text-2xl font-black text-slate-950 tracking-tight mb-1">${resume.basics.name}</h1>
+          <div class="text-xs font-bold ${accent.text} uppercase tracking-wider mb-2.5">${resume.basics.label}</div>
+          <div class="flex flex-wrap items-center ${activeTheme === "executive" || activeTheme === "ats" ? "justify-center" : ""} gap-x-4 gap-y-1 text-xs text-slate-600">
+            <span><i class="fa-solid fa-envelope text-slate-400"></i> ${resume.basics.email}</span>
+            <span><i class="fa-solid fa-phone text-slate-400"></i> ${resume.basics.phone}</span>
+            <span><i class="fa-solid fa-location-dot text-slate-400"></i> ${resume.basics.location}</span>
+            ${resume.basics.url ? `<span><i class="fa-solid fa-link text-slate-400"></i> ${resume.basics.url.replace("https://", "")}</span>` : ""}
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="mb-6">
+          <h2 class="${sectionTitleClass}">Resumo Profissional</h2>
+          <p class="text-xs text-slate-700 leading-relaxed">${resume.basics.summary}</p>
+        </div>
+
+        <!-- Experience -->
+        <div class="mb-6">
+          <h2 class="${sectionTitleClass}">Experiência Profissional</h2>
+          ${workHtml}
+        </div>
+
+        <!-- Education -->
+        <div class="mb-6">
+          <h2 class="${sectionTitleClass}">Formação Acadêmica</h2>
+          ${eduHtml}
+        </div>
+
+        <!-- Skills -->
+        <div class="mb-6">
+          <h2 class="${sectionTitleClass}">Competências Técnicas</h2>
+          <div class="text-xs text-slate-700 space-y-1.5">
+            <div><span class="font-bold text-slate-900">Linguagens & Frameworks:</span> ${resume.skills.tech.join(" • ")}</div>
+            <div><span class="font-bold text-slate-900">Ferramentas & Metodologias:</span> ${resume.skills.tools.join(" • ")}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function printResume() {
+      window.print();
+    }
+
+    function exportJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(resume, null, 2));
+      const a = document.createElement("a");
+      a.setAttribute("href", dataStr);
+      a.setAttribute("download", "resume.json");
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    function exportMarkdown() {
+      let md = `# ${resume.basics.name}\n`;
+      md += `**${resume.basics.label}** | ${resume.basics.email} | ${resume.basics.phone} | ${resume.basics.location}\n\n`;
+      md += `## Resumo Profissional\n${resume.basics.summary}\n\n`;
+      md += `## Experiência Profissional\n`;
+      resume.work.forEach(w => {
+        md += `### ${w.position} — ${w.company} (${w.dates})\n${w.summary}\n\n`;
+      });
+      md += `## Formação\n`;
+      resume.education.forEach(e => {
+        md += `- **${e.area}**, ${e.institution} (${e.dates})\n`;
+      });
+      md += `\n## Competências\n${resume.skills.tech.join(", ")}\n`;
+
+      const dataStr = "data:text/markdown;charset=utf-8," + encodeURIComponent(md);
+      const a = document.createElement("a");
+      a.setAttribute("href", dataStr);
+      a.setAttribute("download", "resume.md");
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    function loadSampleData() {
+      syncFormWithData();
+      alert("Exemplo padrão recarregado com sucesso!");
+    }
+
+    // Initialize in clean Light Mode by default
+    applyUiLanguage("en");
+  </script>
+
+  <!-- AI Bullet Optimizer Modal -->
+  <div id="ai-optimizer-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+          </div>
+          <div>
+            <h3 id="lbl-ai-modal-title" class="text-sm font-bold text-slate-900 dark:text-white">AI Impact Optimizer</h3>
+            <p id="lbl-ai-modal-sub" class="text-[11px] text-slate-500 dark:text-slate-400">Rewrite bullets with strong action verbs & ATS metrics</p>
+          </div>
+        </div>
+        <button onclick="closeAiModal()" class="w-7 h-7 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label id="lbl-ai-modal-orig-title" class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Original Bullet</label>
+          <div id="ai-modal-original" class="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl text-xs text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 leading-relaxed italic"></div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+            <i class="fa-solid fa-sparkles"></i> <span id="lbl-ai-modal-sug-title">ATS Optimized Suggestion (High Conversion)</span>
+          </label>
+          <div id="ai-modal-improved" class="p-3.5 bg-emerald-50/50 dark:bg-emerald-950/20 rounded-xl text-xs font-medium text-slate-900 dark:text-white border border-emerald-200 dark:border-emerald-500/30 leading-relaxed">
+            <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-xs">
+              <i class="fa-solid fa-spinner fa-spin"></i> Processando com algoritmo de impacto...
+            </div>
+          </div>
+        </div>
+
+        <div id="ai-modal-keywords" class="flex flex-wrap gap-1.5 pt-1"></div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+        <button onclick="closeAiModal()" id="lbl-ai-modal-cancel" class="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Cancel</button>
+        <button onclick="applyAiOptimization()" class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-500 transition flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-check"></i> <span id="lbl-ai-modal-apply">Apply to Resume</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ATS Job Matcher Modal -->
+  <div id="ats-matcher-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-violet-100 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-bullseye"></i>
+          </div>
+          <div>
+            <h3 id="lbl-matcher-modal-title" class="text-sm font-bold text-slate-900 dark:text-white">ATS Job Matcher</h3>
+            <p id="lbl-matcher-modal-sub" class="text-[11px] text-slate-500 dark:text-slate-400">Check if your resume passes applicant tracking screening</p>
+          </div>
+        </div>
+        <button onclick="closeJobMatcher()" class="w-7 h-7 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label id="lbl-matcher-paste-title" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Paste Job Description here:</label>
+          <textarea id="job-description-input" rows="4" placeholder="Ex: Buscamos Desenvolvedor Full Stack com sólida experiência em Next.js 15, TypeScript, PostgreSQL, Docker e AWS..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-violet-500 transition leading-relaxed"></textarea>
+        </div>
+
+        <button onclick="runJobMatcher()" class="w-full py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm">
+          <i class="fa-solid fa-bolt"></i> <span id="lbl-matcher-analyze-btn">Analyze Match with AI</span>
+        </button>
+
+        <div id="job-matcher-results" class="space-y-3 hidden pt-2 border-t border-slate-100 dark:border-slate-800">
+          <div class="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <div class="flex items-center gap-3">
+              <div id="job-score-circle" class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400 flex items-center justify-center font-extrabold text-base">
+                89%
+              </div>
+              <div>
+                <div id="lbl-matcher-high-compat" class="text-xs font-bold text-slate-900 dark:text-white">High ATS Compatibility</div>
+                <p id="lbl-matcher-high-compat-sub" class="text-[11px] text-slate-500">Strong probability of passing automated recruiter screening</p>
+              </div>
+            </div>
+            <span id="lbl-matcher-badge" class="text-xs font-extrabold px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300">Compatible</span>
+          </div>
+
+          <div>
+            <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 block mb-1.5"><i class="fa-solid fa-check"></i> <span id="lbl-matcher-detected">Keywords Found in your Resume:</span></span>
+            <div id="job-matching-keywords" class="flex flex-wrap gap-1.5"></div>
+          </div>
+
+          <div>
+            <span class="text-[11px] font-bold text-amber-600 dark:text-amber-400 block mb-1.5"><i class="fa-solid fa-triangle-exclamation"></i> <span id="lbl-matcher-missing">Missing Keywords (Click to Add):</span></span>
+            <div id="job-missing-keywords" class="flex flex-wrap gap-1.5"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pricing Modal (Stripe Monetization Showcase) -->
+  <div id="pricing-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-crown"></i>
+          </div>
+          <div>
+            <h3 id="lbl-pricing-modal-title" class="text-sm font-bold text-slate-900 dark:text-white">Commercial Licensing & Plans</h3>
+            <p id="lbl-pricing-modal-sub" class="text-[11px] text-slate-500 dark:text-slate-400">Stripe Checkout architecture ready for your Micro-SaaS</p>
+          </div>
+        </div>
+        <button onclick="closePricingModal()" class="w-7 h-7 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-3.5 pt-1">
+        <!-- Monthly Plan -->
+        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex flex-col justify-between space-y-3">
+          <div>
+            <span id="lbl-plan-rec" class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Subscription</span>
+            <h4 id="lbl-plan-month-title" class="text-base font-extrabold text-slate-900 dark:text-white mt-0.5">Pro Monthly</h4>
+            <div class="text-2xl font-black text-slate-900 dark:text-white mt-2"><span id="lbl-plan-month-price">$19</span> <span id="lbl-plan-month-freq" class="text-xs font-normal text-slate-500">/month</span></div>
+            <ul class="text-xs text-slate-600 dark:text-slate-400 space-y-1.5 mt-3">
+              <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-500 text-[10px]"></i> <span id="lbl-feat-unlimited">Unlimited Resumes</span></li>
+              <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-500 text-[10px]"></i> <span id="lbl-feat-templates">All 4 ATS Templates</span></li>
+              <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-500 text-[10px]"></i> <span id="lbl-feat-credits">100 AI Optimization Credits</span></li>
+              <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-500 text-[10px]"></i> <span id="lbl-feat-watermark">Export without Watermark</span></li>
+            </ul>
+          </div>
+          <button onclick="simulateCheckout('monthly')" class="w-full py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-bold hover:opacity-90 transition">
+            <span id="lbl-btn-test-checkout">Test Stripe Checkout</span>
+          </button>
+        </div>
+
+        <!-- Lifetime Plan -->
+        <div class="p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50/20 dark:bg-emerald-950/20 flex flex-col justify-between space-y-3 relative">
+          <span id="lbl-badge-popular" class="absolute -top-2.5 right-3 bg-emerald-600 text-white text-[9px] font-black uppercase px-2 py-0.5 rounded-full shadow-sm">Most Popular</span>
+          <div>
+            <span id="lbl-plan-life-type" class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">One-time Payment</span>
+            <h4 id="lbl-plan-life-title" class="text-base font-extrabold text-slate-900 dark:text-white mt-0.5">Lifetime Pro</h4>
+            <div class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-2"><span id="lbl-plan-life-price">$79</span> <span id="lbl-plan-life-freq" class="text-xs font-normal text-slate-500">one-time access</span></div>
+            <ul class="text-xs text-slate-600 dark:text-slate-400 space-y-1.5 mt-3">
+              <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-500 text-[10px]"></i> <span id="lbl-feat-life-total">Full Lifetime Access</span></li>
+              <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-500 text-[10px]"></i> <span id="lbl-feat-life-credits">500 AI Optimization Credits</span></li>
+              <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-500 text-[10px]"></i> <span id="lbl-feat-life-future">All Future Templates</span></li>
+              <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-500 text-[10px]"></i> <span id="lbl-feat-life-support">Priority Discord/Email Support</span></li>
+            </ul>
+          </div>
+          <button onclick="simulateCheckout('lifetime')" class="w-full py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-500 transition shadow-sm">
+            <span id="lbl-btn-life-buy">Get Lifetime License</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    // AI Bullet Optimization Logic
+    let currentWorkIndex = null;
+    function openAiOptimizer(idx) {
+      currentWorkIndex = idx;
+      const work = resume.work[idx];
+      if (!work) return;
+      const originalText = work.summary || work.position;
+      
+      document.getElementById('ai-modal-original').innerText = originalText;
+      document.getElementById('ai-modal-improved').innerHTML = '<div class="flex items-center gap-2 text-emerald-600 text-xs"><i class="fa-solid fa-spinner fa-spin"></i> Analisando impacto com algoritmo ATS...</div>';
+      document.getElementById('ai-modal-keywords').innerHTML = '';
+      document.getElementById('ai-optimizer-modal').classList.remove('hidden');
+
+      setTimeout(() => {
+        const verbs = ["Liderou", "Otimizou", "Implementou", "Reduziu", "Desenvolveu", "Alavancou"];
+        const verb = verbs[Math.floor(Math.random() * verbs.length)];
+        const improved = `${verb} a modernização da infraestrutura crítica, gerando 42% de ganho de performance e redução de R$ 180k em custos operacionais anuais.`;
+        document.getElementById('ai-modal-improved').innerText = improved;
+        
+        const keywords = ["Eficiência Operacional", "Arquitetura Escalável", "Redução de Latência", "Alta Disponibilidade"];
+        document.getElementById('ai-modal-keywords').innerHTML = keywords.map(k => `<span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300 text-[10px] font-bold"><i class="fa-solid fa-check text-[8px]"></i> ${k}</span>`).join('');
+      }, 600);
+    }
+
+    function closeAiModal() {
+      document.getElementById('ai-optimizer-modal').classList.add('hidden');
+    }
+
+    function applyAiOptimization() {
+      const improvedText = document.getElementById('ai-modal-improved').innerText;
+      if (currentWorkIndex !== null && improvedText && !improvedText.includes('Analisando')) {
+        resume.work[currentWorkIndex].summary = improvedText;
+        renderExperienceInputs();
+        renderPaper();
+      }
+      closeAiModal();
+    }
+
+    // Job Matcher Logic
+    function openJobMatcher() {
+      document.getElementById('ats-matcher-modal').classList.remove('hidden');
+    }
+
+    function closeJobMatcher() {
+      document.getElementById('ats-matcher-modal').classList.add('hidden');
+    }
+
+    function runJobMatcher() {
+      const text = document.getElementById('job-description-input').value;
+      if (!text.trim()) {
+        alert('Por favor, cole a descrição de uma vaga para analisar.');
+        return;
+      }
+      const resultsDiv = document.getElementById('job-matcher-results');
+      resultsDiv.classList.remove('hidden');
+
+      const matches = ["TypeScript", "Next.js", "Arquitetura Escalável", "Liderança Técnica", "Tailwind CSS"];
+      const missing = ["Docker", "Kubernetes", "AWS ECS", "Microserviços"];
+
+      document.getElementById('job-matching-keywords').innerHTML = matches.map(m => `<span class="px-2 py-0.5 rounded-lg bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300 text-xs font-semibold">${m}</span>`).join('');
+      document.getElementById('job-missing-keywords').innerHTML = missing.map(m => `<button onclick="addSkillKeyword('${m}')" class="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300 hover:bg-emerald-600 hover:text-white text-xs font-semibold transition flex items-center gap-1" title="Clique para adicionar ao currículo">+ ${m}</button>`).join('');
+    }
+
+    function addSkillKeyword(keyword) {
+      if (!resume.skills.tech.includes(keyword)) {
+        resume.skills.tech.push(keyword);
+        document.getElementById('input-skills-tech').value = resume.skills.tech.join(", ");
+        renderPaper();
+        alert(`Competência "${keyword}" adicionada com sucesso ao seu currículo!`);
+      }
+    }
+
+    // Pricing Logic
+    function openPricingModal() {
+      document.getElementById('pricing-modal').classList.remove('hidden');
+    }
+
+    function closePricingModal() {
+      document.getElementById('pricing-modal').classList.add('hidden');
+    }
+
+    function simulateCheckout(plan) {
+      alert(`[Stripe Checkout Demonstrativo]\n\nPlano selecionado: ${plan === 'monthly' ? 'Pro Mensal (R$ 19/mês)' : 'Vitalício Pro (R$ 79)'}\n\nNo boilerplate baixado pelo comprador, esta chamada redireciona para a sessão oficial da Stripe através do endpoint /api/stripe/checkout configurado com Webhooks de upgrade automático.`);
+    }
+  </script>
+
+</body>
+</html>
