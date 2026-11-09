@@ -819,6 +819,7 @@
 
     function renderPaper() {
       const container = document.getElementById("printableArea");
+      const d = uiDictionary[currentLang] || uiDictionary.en;
       const accent = accentMap[activeAccent] || accentMap.emerald;
 
       let themeClass = "font-sans text-[13.5px]";
@@ -882,28 +883,28 @@
 
         <!-- Summary -->
         <div class="mb-6">
-          <h2 class="${sectionTitleClass}">Resumo Profissional</h2>
+          <h2 class="${sectionTitleClass}">${d.pdfSummary || "Professional Summary"}</h2>
           <p class="text-xs text-slate-700 leading-relaxed">${resume.basics.summary}</p>
         </div>
 
         <!-- Experience -->
         <div class="mb-6">
-          <h2 class="${sectionTitleClass}">Experiência Profissional</h2>
+          <h2 class="${sectionTitleClass}">${d.pdfExperience || "Work Experience"}</h2>
           ${workHtml}
         </div>
 
         <!-- Education -->
         <div class="mb-6">
-          <h2 class="${sectionTitleClass}">Formação Acadêmica</h2>
+          <h2 class="${sectionTitleClass}">${d.pdfEducation || "Education"}</h2>
           ${eduHtml}
         </div>
 
         <!-- Skills -->
         <div class="mb-6">
-          <h2 class="${sectionTitleClass}">Competências Técnicas</h2>
+          <h2 class="${sectionTitleClass}">${d.pdfSkills || "Technical Skills"}</h2>
           <div class="text-xs text-slate-700 space-y-1.5">
-            <div><span class="font-bold text-slate-900">Linguagens & Frameworks:</span> ${resume.skills.tech.join(" • ")}</div>
-            <div><span class="font-bold text-slate-900">Ferramentas & Metodologias:</span> ${resume.skills.tools.join(" • ")}</div>
+            <div><span class="font-bold text-slate-900">${d.pdfLanguages || "Languages & Frameworks:"}</span> ${resume.skills.tech.join(" • ")}</div>
+            <div><span class="font-bold text-slate-900">${d.pdfTools || "Tools & Methodologies:"}</span> ${resume.skills.tools.join(" • ")}</div>
           </div>
         </div>
       `;
